@@ -1,5 +1,5 @@
 ---
-title: "Arbeidskrav 5"
+title: "Assignment 5: Analyzing repeated measures experiments"
 author: "Mari Hebnes Tobekk"
 format: html
 editor: visual
@@ -7,9 +7,13 @@ editor_options:
   chunk_output_type: console
 ---
 
-# **Assignment 5: Analyzing repeated measures experiments**
+# Lean mass
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
 #### GRAPHS
 
 library(exscidata)
@@ -36,7 +40,11 @@ dxadata %>%
 ```
 
 ```{r}
-#### HISTOGRAM
+#| echo: false
+#| message: false
+#| warning: false
+
+#### BARS
 
 dxadata %>%
   select(participant:include, lean.left_leg, lean.right_leg) %>%
@@ -56,6 +64,10 @@ dxadata %>%
 ```
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
 #### DIFFERENCE
 
 dxadata %>%
@@ -78,6 +90,10 @@ dxadata %>%
 ```
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
 #### SUMMARY
 
 dat <- dxadata %>%
@@ -99,6 +115,10 @@ summary(m)
 ```
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
 #### MEAN CHANGE
 
 library(exscidata)
@@ -124,6 +144,82 @@ dxadata %>%
   print()
 ```
 
-```{r}
+# Strength
 
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+sv <- strengthvolume %>%
+  filter(time %in% c("pre", "post"), 
+         exercise == "legpress", 
+         !is.na(load)) %>% 
+  print()
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+#### GRAF
+sv %>%  
+  group_by(time, sets) %>%
+  summarise(m = mean(load)) %>%
+  mutate(time = factor(time, levels = c("pre", "post"))) %>%
+  ggplot(aes(time, m, color = sets, 
+             group = sets)) + geom_line()
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+#### BARS
+sv %>%
+  pivot_wider(names_from = time, 
+              values_from = load) %>%
+  mutate(change = post - pre) %>%
+  group_by(sets) %>%
+  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
+  ggplot(aes(sets, mean_change, fill = sets)) + 
+  geom_bar(stat = "identity", width = 0.3)
+  
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+#### DIFFERANSE
+sv %>%
+  pivot_wider(names_from = time, 
+              values_from = load) %>%
+  mutate(change = post - pre) %>%
+  group_by(sets) %>%
+  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
+  pivot_wider(names_from = sets, 
+              values_from = mean_change) %>%
+  mutate(diff = multiple - single) %>%
+  print()
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+#### REGRESJON
+calc <- sv %>%
+  pivot_wider(names_from = time, 
+              values_from = load) %>%
+  mutate(change = post - pre) %>%
+  print()
+
+m1 <- lm(change ~ sets, data = calc)
+summary(m1)
 ```
