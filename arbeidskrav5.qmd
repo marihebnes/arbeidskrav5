@@ -1,0 +1,34 @@
+---
+title: "Arbeidskrav 5"
+author: "Mari Hebnes Tobekk"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# **Assignment 5: Analyzing repeated measures experiments**
+
+```{r}
+library(exscidata)
+data("dxadata"); data("strengthvolume")
+library(tidyverse)
+
+dxachange <- dxadata %>%
+  select(participant:include, lean.left_leg, lean.right_leg) %>%
+  pivot_longer(names_to = "leg", 
+               values_to = "lean.mass", 
+               cols = lean.left_leg:lean.right_leg) %>%
+  mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
+         sets = if_else(multiple == leg, "multiple", "single")) %>%
+  select(participant, time, sex, include, sets, leg, lean.mass) %>%
+  pivot_wider(names_from = "time", values_from = "lean.mass")%>%
+  mutate(change = post - pre) %>%
+  group_by(sets) %>%
+  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
+  ggplot(aes(group, mean_change, fill = group)) + 
+  geom_bar(stat = "identity", width = 0.3)%>%
+  print()
+
+
+```
