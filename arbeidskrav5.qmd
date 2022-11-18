@@ -9,217 +9,99 @@ editor_options:
 
 # Lean mass
 
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### GRAPHS
-
+```{r setup, include=FALSE}
+library(tidyverse)
 library(exscidata)
-data("dxadata"); data("strengthvolume")
+data("dxadata") 
+data("strengthvolume")
+```
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, results="hide"}
 library(tidyverse)
-
-library(tidyverse)
-
-dxadata %>%
-  select(participant:include, lean.left_leg, lean.right_leg) %>%
-  pivot_longer(names_to = "leg", 
-               values_to = "lean.mass", 
-               cols = lean.left_leg:lean.right_leg) %>%
-  mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
-         sets = if_else(multiple == leg, "multiple", "single")) %>%
-  select(participant, time, sex, include, sets, leg, lean.mass) %>%
-  filter(time %in% c("pre", "post")) %>%
-  group_by(time, sets) %>%
-  summarise(m = mean(lean.mass)) %>%
-  mutate(time = factor(time, levels = c("pre", "post"))) %>%
-  ggplot(aes(time, m, color = sets,
-             group = sets)) + geom_line()
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### BARS
-
-dxadata %>%
-  select(participant:include, lean.left_leg, lean.right_leg) %>%
-  pivot_longer(names_to = "leg", 
-               values_to = "lean.mass", 
-               cols = lean.left_leg:lean.right_leg) %>%
-  mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
-         sets = if_else(multiple == leg, "multiple", "single")) %>%
-  select(participant, time, sex, include, sets, leg, lean.mass) %>%
-  pivot_wider(names_from = time, 
-              values_from = lean.mass) %>%
-  mutate(change = post - pre) %>%
-  group_by(sets) %>%
-  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
-  ggplot(aes(sets, mean_change, fill = sets)) + 
-  geom_bar(stat = "identity", width = 0.3)
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### DIFFERENCE
-
-dxadata %>%
-  select(participant:include, lean.left_leg, lean.right_leg) %>%
-  pivot_longer(names_to = "leg", 
-               values_to = "lean.mass", 
-               cols = lean.left_leg:lean.right_leg) %>%
-  mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
-         sets = if_else(multiple == leg, "multiple", "single")) %>%
-  select(participant, time, sex, include, sets, leg, lean.mass) %>%
-  pivot_wider(names_from = time, 
-              values_from = lean.mass) %>%
-  mutate(change = post - pre) %>%
-  group_by(sets) %>%
-  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
-  pivot_wider(names_from = sets, 
-              values_from = mean_change) %>%
-  mutate(diff = multiple - single) %>%
-  print()
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### SUMMARY
-
-dat <- dxadata %>%
-  select(participant:include, lean.left_leg, lean.right_leg) %>%
-  pivot_longer(names_to = "leg", 
-               values_to = "lean.mass", 
-               cols = lean.left_leg:lean.right_leg) %>%
-  mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
-         sets = if_else(multiple == leg, "multiple", "single")) %>%
-  select(participant, time, sex, include, sets, leg, lean.mass) %>%
-  pivot_wider(names_from = time, 
-              values_from = lean.mass) %>%
-  mutate(change = post - pre) %>%
-  print()
-  
-m <- lm(change ~ sets, data = dat)
-
-summary(m)
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### MEAN CHANGE
-
 library(exscidata)
-data("dxadata"); data("strengthvolume")
 
-library(tidyverse)
-
-library(tidyverse)
-
-dxadata %>%
+lmass <- dxadata %>%
   select(participant:include, lean.left_leg, lean.right_leg) %>%
   pivot_longer(names_to = "leg", 
                values_to = "lean.mass", 
                cols = lean.left_leg:lean.right_leg) %>%
   mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
          sets = if_else(multiple == leg, "multiple", "single")) %>%
-  select(participant, time, sex, include, sets, leg, lean.mass) %>%
-  pivot_wider(names_from = "time",
-              values_from = "lean.mass") %>%
-  mutate(change = post - pre) %>%
-  group_by(sets) %>%
-  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
-  print()
-```
-
-# Strength
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-sv <- strengthvolume %>%
-  filter(time %in% c("pre", "post"), 
-         exercise == "legpress", 
-         !is.na(load)) %>% 
-  print()
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### GRAF
-sv %>%  
-  group_by(time, sets) %>%
-  summarise(m = mean(load)) %>%
-  mutate(time = factor(time, levels = c("pre", "post"))) %>%
-  ggplot(aes(time, m, color = sets, 
-             group = sets)) + geom_line()
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### BARS
-sv %>%
-  pivot_wider(names_from = time, 
-              values_from = load) %>%
-  mutate(change = post - pre) %>%
-  group_by(sets) %>%
-  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
-  ggplot(aes(sets, mean_change, fill = sets)) + 
-  geom_bar(stat = "identity", width = 0.3)
+  select(participant, time, sets, sex, leg, lean.mass) %>%
   
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-
-#### DIFFERANSE
-sv %>%
-  pivot_wider(names_from = time, 
-              values_from = load) %>%
-  mutate(change = post - pre) %>%
+  pivot_wider(names_from = time,
+              values_from = lean.mass) %>%
+  mutate(changelm = post - pre) %>%
+  mutate(pre = pre - mean(pre)) %>% 
+  mutate(prosentvis.endring = ((post - pre) / pre) * 100) %>%
+  filter(!is.na(changelm)) 
+  
+ 
+  
+lmass %>%   
   group_by(sets) %>%
-  summarise(mean_change = mean(change, na.rm = TRUE)) %>%
-  pivot_wider(names_from = sets, 
-              values_from = mean_change) %>%
-  mutate(diff = multiple - single) %>%
-  print()
-```
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-#### REGRESJON
-calc <- sv %>%
-  pivot_wider(names_from = time, 
-              values_from = load) %>%
-  mutate(change = post - pre) %>%
-  print()
-
-m1 <- lm(change ~ sets, data = calc)
+  summarise(m = mean(prosentvis.endring),
+            sd = sd(prosentvis.endring)) 
+m1 <- lm(post ~ pre + sex + sets, data = lmass)
 summary(m1)
+plot(m1)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 1 viser økningen i muskelvekst hos forsøkspersoner gruppert i 1 sett og 3 sett"}
+ 
+modell <- dxadata %>%
+  select(participant:include, lean.left_leg, lean.right_leg) %>%
+  pivot_longer(names_to = "leg", 
+               values_to = "lean.mass", 
+               cols = lean.left_leg:lean.right_leg) %>%
+   mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
+         sets = if_else(multiple == leg, "3 sett", "1 sett")) %>%
+  select(participant, time, sets, sex, leg, lean.mass) %>%
+  group_by(participant) %>%
+  mutate(n = n(), group = factor(sets, levels = c("1 sett", "3 sett")), time = factor(time, levels = c("pre", "post")))
+modell %>%
+ ggplot(aes(time, lean.mass, group = paste(participant, group), color = group)) + geom_line() + theme_bw()
+
+  
+```
+
+# Styrke
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, results="hide"}
+strength <- strengthvolume %>%
+  filter(!is.na(load)) %>%
+  group_by(exercise) %>%
+  mutate(loads = load / max(load, na.rm = TRUE)) %>%
+  group_by(participant, time, sex, sets) %>%
+  summarise(combined = mean(loads, na.rm = TRUE)) %>%
+  ungroup() %>%
+  
+  
+  pivot_wider(names_from = time,
+              values_from = combined) %>%
+  mutate(endring = ((post - pre) / pre) * 100) 
+strength %>%    
+  filter(!is.na(post)) %>%
+  group_by(sets) %>%
+  summarise(m = mean(endring),
+            sd = sd(endring)) 
+m2 <- lm(post ~ pre + sex + sets, data = strength)
+summary(m2)
+plot(m2)
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 2 viser endring i muskelstyrke for alle forsøkspersonene fra pre- post skildt ved single- sett og multiple- sett"}
+#Endre teksten 
+styrke <- strengthvolume %>%
+  group_by(exercise) %>%
+  mutate(loads = load / max(load, na.rm = TRUE)) %>%
+  group_by(participant, time, sex, sets) %>%
+  summarise(combined = mean(loads, na.rm = TRUE)) %>%
+  ungroup() 
+styrke %>%
+  filter(!is.na(combined), time == factor(time, levels = c("pre", "post"))) %>%
+  mutate(time = factor(time, levels = c("pre", "post")),
+         group = factor(sets, levels = c("Single", "Multiple"))) %>%
+ ggplot(aes(time, combined, group = paste(participant, sets), color = sets)) + geom_line() + theme_bw()
 ```
