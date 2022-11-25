@@ -80,7 +80,7 @@ summary(m1)
 plot(m1)
 ```
 
-Resultatene viser signifikant forskjell i økning av muskelmasse *(p \< 0.01)* hvor tre sett hadde større effekt enn tre sett.
+Resultatene viser signifikant forskjell i økning av muskelmasse hvor tre sett hadde større effekt enn ett sett *(p \< 0.01)* .
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 1 viser økningen i muskelvekst hos forsøkspersoner gruppert i 1 sett og 3 sett"}
  
@@ -143,5 +143,7 @@ styrke %>%
 ```
 
 # Diskusjon
+
+Resultatene fra denne studien viser flere sett i styrketrening og derav større treningsvolum gir større effekt på muskelstyrke og muskelmasse enn med et lavere treningsvolum. I studiene til blant annet @radaelli2015 og @rønnestad2007 er det rapportert større økning i muskelmasse hvor de målte muskelfibertverrsnitt, muskeltykkelse og kroppssammensetning. Også forskning på treningsvolum og myofibrillær proteinsyntese støtter sammenhengen mellom treningsdose og respons i skjelettmuskulatur [@kumar2009; @phillips1997; @burd2010]. I noen forsøk blir det rappportert ingen forskjell med høyt eller lavt treningsvolum på muskelmasse [@bottaro2011; @mcbride2003], men en metaanalyse støtter likevel under at det er en dose-respons mellom styrketrening og muskelmasse [@krieger2010].
 
 ### Referanseliste
