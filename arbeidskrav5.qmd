@@ -12,7 +12,7 @@ bibliography: references.bib
 
 Styrketrening har blitt bevist å ha en preventativ og behandlende effekt mot livsstilsykdommer og diverse helseutfordringer [@westcott2012]. Den allmenne befolkningen blir anbefalt å trene styrketrening, men undersøkelser viser at de færreste følger denne anbefalingen [@statisti]. En faktor som hindrer noen for styrketrening er mangel på tid [@choi2017] og det skulle i disse tilfellene være gunstig å kunne trene styrketrening med mest mulig effekt på kort tid.
 
-Effekten av styrketrening er avhengig av og kan manipuleres av ulike variabler som belastning, antall sett og varighet på pause [@progress2009]. Det er gjort flere forsøk på å sammenligne effekten av styrketrening som kommer av å trene ett eller få sett i motsetning til flere sett. Forsøkene får varierte utfall hvor blant annet @cannon2010 fant at personer fikk samme effekt på muskelstyrke og muskelmasse av å trene styrketrening med ett og tre sett. Likevel viser en metaanalyse at det er en sammenheng mellom treningsdose og treningsrespons som antyder at flere sett vil gi bedre effekt av styrketrening [@schoenfeld2017].
+Effekten av styrketrening er avhengig av og kan manipuleres av ulike variabler som belastning, antall sett og varighet på pause [@progress2009]. Det er gjort flere forsøk på å sammenligne effekten av styrketrening som kommer av å trene ett eller få sett i motsetning til flere sett. Forsøkene får varierte utfall hvor blant annet @cannon2010 rapporterte at personer fikk samme effekt på muskelstyrke og muskelmasse av å trene styrketrening med ett og tre sett. Likevel viser en metaanalyse at det er en sammenheng mellom treningsdose og treningsrespons som antyder at flere sett vil gi bedre effekt av styrketrening [@schoenfeld2017].
 
 Dersom man oppnår samme effekt av styrketrening på mindre tid kan det være en løsning for å få flere til å gjøre styrketrening hvor tidsbruk blir en mindre utfordring. Denne studien skal undersøke om personer får samme effekt på muskelmasse og muskelstyrke ved å trene ett sett eller tre sett med styrketrening.
 
@@ -40,7 +40,7 @@ Kroppssammensetning ble målt før og ette treningsintervensjon i DXA. Deltakern
 
 # Resultater
 
-### Lean mass
+### Kroppssammensetning
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -80,6 +80,8 @@ summary(m1)
 plot(m1)
 ```
 
+Resultatene viser signifikant forskjell i økning av muskelmasse *(p \< 0.01)* hvor tre sett hadde større effekt enn tre sett.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 1 viser økningen i muskelvekst hos forsøkspersoner gruppert i 1 sett og 3 sett"}
  
 modell <- dxadata %>%
@@ -98,9 +100,9 @@ modell %>%
   
 ```
 
-### Styrke
+### Muskelstyrke
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, results="hide"}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 strength <- strengthvolume %>%
   filter(!is.na(load)) %>%
   group_by(exercise) %>%
@@ -121,8 +123,9 @@ strength %>%
 m2 <- lm(post ~ pre + sex + sets, data = strength)
 summary(m2)
 plot(m2)
-
 ```
+
+Resultatene viser at det er en signifikant forskjell mellom de som trente ett sett og tre sett på økningen i muskelstyrke *(p \< 0.01)*. Gruppen med tre sett hadde større økning i muskelstyrke *(M = 31, SD = 14.2)* enn gruppen som trente ett sett *(M = 24.5, SD = 12.9)*.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 2 viser endring i muskelstyrke for alle forsøkspersonene fra pre til post for ett sett og tre sett"}
 #Endre teksten 
@@ -141,4 +144,4 @@ styrke %>%
 
 # Diskusjon
 
-# Referanseliste
+### Referanseliste
