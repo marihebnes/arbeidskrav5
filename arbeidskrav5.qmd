@@ -80,7 +80,7 @@ summary(m1)
 plot(m1)
 ```
 
-Resultatene viser signifikant forskjell i økning av muskelmasse hvor tre sett hadde større effekt enn ett sett *(p \< 0.01)* .
+Resultatene viser signifikant forskjell i økning av muskelmasse i underkroppen hvor tre sett hadde større effekt enn ett sett *(p \< 0.01)* .
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 1 viser økningen i muskelvekst hos forsøkspersoner gruppert i 1 sett og 3 sett"}
  
@@ -144,6 +144,12 @@ styrke %>%
 
 # Diskusjon
 
-Resultatene fra denne studien viser flere sett i styrketrening og derav større treningsvolum gir større effekt på muskelstyrke og muskelmasse enn med et lavere treningsvolum. I studiene til blant annet @radaelli2015 og @rønnestad2007 er det rapportert større økning i muskelmasse hvor de målte muskelfibertverrsnitt, muskeltykkelse og kroppssammensetning. Også forskning på treningsvolum og myofibrillær proteinsyntese støtter sammenhengen mellom treningsdose og respons i skjelettmuskulatur [@kumar2009; @phillips1997; @burd2010]. I noen forsøk blir det rappportert ingen forskjell med høyt eller lavt treningsvolum på muskelmasse [@bottaro2011; @mcbride2003], men en metaanalyse støtter likevel under at det er en dose-respons mellom styrketrening og muskelmasse [@krieger2010].
+Resultatene fra denne studien viser flere sett i styrketrening og derav større treningsvolum gir større effekt på muskelstyrke og muskelmasse enn med et lavere treningsvolum. I en lignende studie trente 25 menn styrketrening i 11 uker hvor de trente enten ett sett eller tre sett på ben og armer. Studien rapporterte signifikant større økning i muskelmasse på underkroppen på benet som trente tre sett da de målte muskelfibertverrsnitt [@rønnestad2007]. @radaelli2015 rapporterte samme effekt fra hans studie hvor 48 menn trente styrketrening med ett, tre eller fem sett i hver øvelse i 6 måneder. Etter treningsintervensjonen fikk de signifikante resultater på at desto flere sett de trente gidde det større økning i muskelmasse da de målte muskeltykkelsen med ultralyd. Også forskning på treningsvolum og myofibrillær proteinsyntese støtter teorien da det rapporteres en sammenheng mellom treningsdose og en akutt respons i skjelettmuskulatur [@kumar2009; @phillips1997; @burd2010]. I noen forsøk blir det rappportert at der ikke er en forskjell med høyt eller lavt treningsvolum på muskelmasse [@bottaro2011; @mcbride2003], men metaanalyser konkluderer likevel med at høyere treningsvolum vil gi større hypertrofi [@schoenfeld2017; @krieger2010].
+
+I denne studien gidde tre sett større økning i muskelstyrke i underkroppen enn å trene ett sett. @rønnestad2007 hadde lignende resultater i sin studie hvor på underkroppen var tre sett signifikant mer effektivt for å øke maksimal styrke, men på styrkemålingene i overkroppsmuskulatur gidde ett og tre sett lik effekt. I en studie hvor 16 menn trente styrketrening i 12 uker ble det også rapportert styrkeøknigen av tre sett var signifikant større i benpress, men ikke i benkpress \[@rhea2002\]. Studien til @radaelli2015 ble det rapportert størst økning i muskelstyrke med tre og fem sett. I dette forsøket ble de testet i øvelsene benkpress, skulderpress, nedtrekk og benpress. I benkpress og nedtrekk gidde fem sett også større økning enn tre sett, men i skulderpress og benpress ble det rapportert ingen signifikant forskjell mellom å trene tre og fem sett. Overordnet kan dette tyde på at hvilken kroppsdel man trener, valg av styrkeøvelser og mulig andre faktorer har mer å si for hvilken effekt man kan forvente. I en metaregresjon av @krieger2009 ble det konkludert at tre sett ville gi høyere muskelstyrke enn med ett sett, men at i noen tilfeller kan styrketrening med ett sett være tilstrekkelig.
+
+### Konklusjon
+
+I dette studiet hadde gruppen størst effekt på muskelstyrke og muskelmasse ved å trene tre sett enn ved å trene ett sett.
 
 ### Referanseliste
