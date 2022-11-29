@@ -49,104 +49,66 @@ data("dxadata")
 data("strengthvolume")
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, results="hide"}
-library(tidyverse)
-library(exscidata)
+```{r}
+library(tidyverse); library(exscidata); library(lme4)
 
-lmass <- dxadata %>%
+# Load data
+dat <- dxadata %>%
   select(participant:include, lean.left_leg, lean.right_leg) %>%
+        
+        # Extract leg specific data
   pivot_longer(names_to = "leg", 
                values_to = "lean.mass", 
                cols = lean.left_leg:lean.right_leg) %>%
   mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
          sets = if_else(multiple == leg, "multiple", "single")) %>%
-  select(participant, time, sets, sex, leg, lean.mass) %>%
+  select(participant, time, sex, include, sets, leg, lean.mass) %>%
+        # Filter only included participants
+        filter(include == "incl") %>%
+        # Make data set wider by time 
+        
+        pivot_wider(names_from = "time", 
+                    values_from = "lean.mass") %>%
+        # Calculate change score
+        
+        mutate(change = post - pre) %>%
+        
+        # Keep change score and make it wider by sets
+        select(participant:sets, change) %>%
+        pivot_wider(names_from = sets, values_from = change) %>%
   
-  pivot_wider(names_from = time,
-              values_from = lean.mass) %>%
-  mutate(changelm = post - pre) %>%
-  mutate(pre = pre - mean(pre)) %>% 
-  mutate(prosentvis.endring = ((post - pre) / pre) * 100) %>%
-  filter(!is.na(changelm)) 
-  
- 
-  
-lmass %>%   
-  group_by(sets) %>%
-  summarise(m = mean(prosentvis.endring),
-            sd = sd(prosentvis.endring)) 
-m1 <- lm(post ~ pre + sex + sets, data = lmass)
-summary(m1)
-plot(m1)
+  print()
+        
+  ### Use simple t-test on change score
+
+t.test(dat$multiple, dat$single, paired = TRUE)
 ```
 
-Resultatene viser signifikant forskjell i økning av muskelmasse i underkroppen hvor tre sett hadde større effekt enn ett sett *(p \< 0.01)* .
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 1 viser økningen i muskelvekst hos forsøkspersoner gruppert i 1 sett og 3 sett"}
- 
-modell <- dxadata %>%
-  select(participant:include, lean.left_leg, lean.right_leg) %>%
-  pivot_longer(names_to = "leg", 
-               values_to = "lean.mass", 
-               cols = lean.left_leg:lean.right_leg) %>%
-   mutate(leg = if_else(leg == "lean.left_leg", "L", "R"), 
-         sets = if_else(multiple == leg, "3 sett", "1 sett")) %>%
-  select(participant, time, sets, sex, leg, lean.mass) %>%
-  group_by(participant) %>%
-  mutate(n = n(), group = factor(sets, levels = c("1 sett", "3 sett")), time = factor(time, levels = c("pre", "post")))
-modell %>%
- ggplot(aes(time, lean.mass, group = paste(participant, group), color = group)) + geom_line() + theme_bw()
-
-  
-```
+Resultat fra t-test viser signifikant forskjell i økning av muskelmasse i underkroppen hvor tre sett hadde større effekt enn ett sett *(t(33) = 2.19, p = 0.04).*
 
 ### Muskelstyrke
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-strength <- strengthvolume %>%
-  filter(!is.na(load)) %>%
-  group_by(exercise) %>%
-  mutate(loads = load / max(load, na.rm = TRUE)) %>%
-  group_by(participant, time, sex, sets) %>%
-  summarise(combined = mean(loads, na.rm = TRUE)) %>%
-  ungroup() %>%
-  
-  
+```{r}
+library(tidyverse)
+library(exscidata)
+library(lme4)
+
+dat2 <- strengthvolume %>%
+  select(participant, include, time, sets, leg, load) %>%
+  filter(include == "incl") %>%
   pivot_wider(names_from = time,
-              values_from = combined) %>%
-  mutate(endring = ((post - pre) / pre) * 100) 
-strength %>%    
-  filter(!is.na(post)) %>%
-  group_by(sets) %>%
-  summarise(m = mean(endring),
-            sd = sd(endring)) 
-m2 <- lm(post ~ pre + sex + sets, data = strength)
-summary(m2)
-plot(m2)
+              values_from = load) %>%
+  mutate(change = post - pre) %>%
+  print()
 ```
 
 Resultatene viser at det er en signifikant forskjell mellom de som trente ett sett og tre sett på økningen i muskelstyrke *(p \< 0.01)*. Gruppen med tre sett hadde større økning i muskelstyrke *(M = 31, SD = 14.2)* enn gruppen som trente ett sett *(M = 24.5, SD = 12.9)*.
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, results="hide", fig.cap = "Figur 2 viser endring i muskelstyrke for alle forsøkspersonene fra pre til post for ett sett og tre sett"}
-#Endre teksten 
-styrke <- strengthvolume %>%
-  group_by(exercise) %>%
-  mutate(loads = load / max(load, na.rm = TRUE)) %>%
-  group_by(participant, time, sex, sets) %>%
-  summarise(combined = mean(loads, na.rm = TRUE)) %>%
-  ungroup() 
-styrke %>%
-  filter(!is.na(combined), time == factor(time, levels = c("pre", "post"))) %>%
-  mutate(time = factor(time, levels = c("pre", "post")),
-         group = factor(sets, levels = c("Single", "Multiple"))) %>%
- ggplot(aes(time, combined, group = paste(participant, sets), color = sets)) + geom_line() + theme_bw()
-```
 
 # Diskusjon
 
 Resultatene fra denne studien viser flere sett i styrketrening og derav større treningsvolum gir større effekt på muskelstyrke og muskelmasse enn med et lavere treningsvolum. I en lignende studie trente 25 menn styrketrening i 11 uker hvor de trente enten ett sett eller tre sett på ben og armer. Studien rapporterte signifikant større økning i muskelmasse på underkroppen på benet som trente tre sett da de målte muskelfibertverrsnitt [@rønnestad2007]. @radaelli2015 rapporterte samme effekt fra hans studie hvor 48 menn trente styrketrening med ett, tre eller fem sett i hver øvelse i 6 måneder. Etter treningsintervensjonen fikk de signifikante resultater på at desto flere sett de trente gidde det større økning i muskelmasse da de målte muskeltykkelsen med ultralyd. Også forskning på treningsvolum og myofibrillær proteinsyntese støtter teorien da det rapporteres en sammenheng mellom treningsdose og en akutt respons i skjelettmuskulatur [@kumar2009; @phillips1997; @burd2010]. I noen forsøk blir det rappportert at der ikke er en forskjell med høyt eller lavt treningsvolum på muskelmasse [@bottaro2011; @mcbride2003], men metaanalyser konkluderer likevel med at høyere treningsvolum vil gi større hypertrofi [@schoenfeld2017; @krieger2010].
 
-I denne studien gidde tre sett større økning i muskelstyrke i underkroppen enn å trene ett sett. @rønnestad2007 hadde lignende resultater i sin studie hvor på underkroppen var tre sett signifikant mer effektivt for å øke maksimal styrke, men på styrkemålingene i overkroppsmuskulatur gidde ett og tre sett lik effekt. I en studie hvor 16 menn trente styrketrening i 12 uker ble det også rapportert styrkeøknigen av tre sett var signifikant større i benpress, men ikke i benkpress \[@rhea2002\]. Studien til @radaelli2015 ble det rapportert størst økning i muskelstyrke med tre og fem sett. I dette forsøket ble de testet i øvelsene benkpress, skulderpress, nedtrekk og benpress. I benkpress og nedtrekk gidde fem sett også større økning enn tre sett, men i skulderpress og benpress ble det rapportert ingen signifikant forskjell mellom å trene tre og fem sett. Overordnet kan dette tyde på at hvilken kroppsdel man trener, valg av styrkeøvelser og mulig andre faktorer har mer å si for hvilken effekt man kan forvente. I en metaregresjon av @krieger2009 ble det konkludert at tre sett ville gi høyere muskelstyrke enn med ett sett, men at i noen tilfeller kan styrketrening med ett sett være tilstrekkelig.
+I denne studien gidde tre sett større økning i muskelstyrke i underkroppen enn å trene ett sett. @rønnestad2007 hadde lignende resultater i sin studie hvor på underkroppen var tre sett signifikant mer effektivt for å øke maksimal styrke, men på styrkemålingene i overkroppsmuskulatur gidde ett og tre sett lik effekt. I en studie hvor 16 menn trente styrketrening i 12 uker ble det også rapportert styrkeøknigen av tre sett var signifikant større i benpress, men ikke i benkpress [@rhea2002]. Studien til @radaelli2015 ble det rapportert størst økning i muskelstyrke med tre og fem sett. I dette forsøket ble de testet i øvelsene benkpress, skulderpress, nedtrekk og benpress. I benkpress og nedtrekk gidde fem sett også større økning enn tre sett, men i skulderpress og benpress ble det rapportert ingen signifikant forskjell mellom å trene tre og fem sett. Overordnet kan dette tyde på at hvilken kroppsdel man trener, valg av styrkeøvelser og mulig andre faktorer har mer å si for hvilken effekt man kan forvente. I en metaregresjon av @krieger2009 ble det konkludert at tre sett ville gi høyere muskelstyrke enn med ett sett, men at i noen tilfeller kan styrketrening med ett sett være tilstrekkelig.
 
 ### Konklusjon
 
